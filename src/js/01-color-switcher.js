@@ -1,48 +1,38 @@
-const body = document.body;
-const startBtn = body.querySelector("button[data-start]");
-const stopBtn = body.querySelector("button[data-stop]");
-let timer = null;
-stopBtn.setAttribute("disabled", "");
+const refs = {
+    body: document.body,
+    startBtn: document.querySelector("[data-start]"),
+    stopBtn: document.querySelector("[data-stop]")
+}
+
+let timerId = null;
+
+refs.stopBtn.setAttribute("disabled", "");
 
 const getRandomHexColor = () => {
     return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`;
 }
 
-const getBodyColor = () => body.style.backgroundColor = getRandomHexColor();
-
-
-const changeColor = () => {
-    try {
-        getBodyColor();
-        timer = setInterval(() => {
-            getBodyColor();
-        }, 1000);
-        if (timer !== null) {
-            startBtn.setAttribute("disabled", "");
-            stopBtn.removeAttribute("disabled");
-        }
-    }
-
-    catch (error) {
-        console.log(error.message);
-    }
-
+const changeBodyColor = () => {
+    refs.body.style.backgroundColor = getRandomHexColor();
 }
 
-const stopChangeColor = () => {
-    try {
-        clearInterval(timer);
-        timer = null;
-        body.removeAttribute("style");
-        startBtn.removeAttribute("disabled");
-        stopBtn.setAttribute("disabled", "");
-    }
+const startChangeBodyColor = () => {
+    const INTERVAL = 1000;
+    changeBodyColor();
+    timerId = setInterval(() => {
+        changeBodyColor();
+    }, INTERVAL);
 
-    catch (error) {
-        console.log(error.message);
-    }
-
+    refs.startBtn.setAttribute("disabled", "");
+    refs.stopBtn.removeAttribute("disabled");
 }
 
-startBtn.addEventListener("click", changeColor);
-stopBtn.addEventListener("click", stopChangeColor);
+const stopChangeBodyColor = () => {
+    clearInterval(timerId);
+    refs.body.removeAttribute("style");
+    refs.startBtn.removeAttribute("disabled");
+    refs.stopBtn.setAttribute("disabled", "");
+}
+
+refs.startBtn.addEventListener("click", startChangeBodyColor);
+refs.stopBtn.addEventListener("click", stopChangeBodyColor);
